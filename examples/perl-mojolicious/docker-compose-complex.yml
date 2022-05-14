@@ -1,0 +1,35 @@
+version: "2"
+
+services:
+  database:
+    image: postgres:9.4
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+      - "db-data:/var/lib/postgresql/data"
+      - "./healthchecks:/healthchecks"
+    healthcheck:
+      test: /healthchecks/postgres.sh
+      interval: "5s"
+    networks:
+      - back-tier
+
+  web:
+    image: ioporg/uat_review
+    environment:
+      - PROFILE=dev
+    ports:
+      - "88888:80"
+    volumes:
+      - /tmp
+    links:
+      - database
+
+volumes:
+  database-volume:
+    driver: local
+
+networks:
+  front-tier:
+  back-tier:
