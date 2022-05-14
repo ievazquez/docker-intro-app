@@ -1,2 +1,2 @@
 # docker-intro-app
-sample mojolicious
+docker examples
