@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  # MongoDB Service
+  mongodb:
+    container_name: db
+    image: mongo  # Use a public mongodb image to build the redis service
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    networks:
+      - backend
+    environment:
+       - MONGO_INITDB_ROOT_USERNAME=admin
+       - MONGO_INITDB_ROOT_PASSWORD=password
+       - MONGO_DATABASE=demo
+
+  # App Service
+  app:
+    # Configuration for building the docker image for the service
+    build:
+      context: ./app # Use an image built from the specified dockerfile in the current directory.
+      dockerfile: Dockerfile
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URI: "mongodb://admin:password@mongodb:27017/test?authSource=admin"
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+networks:
+  # Create a new Docker network.
+  backend:
+    driver: bridge
